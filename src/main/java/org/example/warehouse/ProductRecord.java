@@ -1,20 +1,32 @@
 package org.example.warehouse;
 
 import java.math.BigDecimal;
+import java.util.HashSet;
 import java.util.Objects;
+import java.util.Set;
 import java.util.UUID;
 
 public final class ProductRecord {
     private final UUID UUID_value;
     private final String UUID_name;
     private final Category categoryName;
-    private  BigDecimal bigDecimal;
+    private BigDecimal bigDecimal;
 
     public ProductRecord(UUID UUID_value, String UUID_name, Category categoryName, BigDecimal bigDecimal) {
-        this.UUID_value = UUID_value;
-        this.UUID_name = UUID_name;
-        this.categoryName = categoryName;
-        this.bigDecimal = bigDecimal;
+        if (UUID_name == null || UUID_name.isEmpty()) {
+            throw new IllegalArgumentException("Product name can't be null or empty.");
+        }
+
+        else if (categoryName == null) {
+            throw new IllegalArgumentException("Category can't be null.");
+        }
+
+        else  {
+            this.UUID_value = UUID_value;
+            this.UUID_name = UUID_name;
+            this.categoryName = categoryName;
+            this.bigDecimal = bigDecimal;}
+
     }
 
     public UUID uuid() {
@@ -40,7 +52,7 @@ public final class ProductRecord {
         return UUID_name;
     }
 
-    public Category categoryName() {
+    public Category category() {
         return categoryName;
     }
 
@@ -51,6 +63,7 @@ public final class ProductRecord {
     public void setBigDecimal(BigDecimal bigDecimal) {
         this.bigDecimal = bigDecimal;
     }
+
 
     @Override
     public boolean equals(Object obj) {
@@ -76,6 +89,5 @@ public final class ProductRecord {
                 "categoryName=" + categoryName + ", " +
                 "bigDecimal=" + bigDecimal + ']';
     }
-
 
 }
