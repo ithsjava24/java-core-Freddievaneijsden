@@ -1,12 +1,14 @@
 package org.example.warehouse;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Objects;
 
 public class Category {
     private String categoryName;
+    private static final Map<String, Category> categories = new HashMap<>();
 
     private Category(String categoryName) {
-
         if (categoryName == null || categoryName.isEmpty()) {
             throw new IllegalArgumentException("Category name can't be null");
         }
@@ -14,7 +16,10 @@ public class Category {
     }
 
     public static Category of(String categoryName) {
-        return new Category(categoryName);
+        if (!categories.containsKey(categoryName)) {
+            categories.put(categoryName, new Category(categoryName));
+        }
+        return categories.get(categoryName);
     }
 
     public String getName() {
