@@ -8,7 +8,7 @@ public class Category {
     private Category(String categoryName) {
 
         if (categoryName == null || categoryName.isEmpty()) {
-            throw new IllegalArgumentException("Category name cannot be null or empty");
+            throw new IllegalArgumentException("Category name can't be null");
         }
         this.categoryName = categoryName.substring(0, 1).toUpperCase().concat(categoryName.substring(1));
     }
