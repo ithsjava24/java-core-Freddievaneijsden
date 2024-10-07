@@ -1,16 +1,14 @@
 package org.example.warehouse;
 
 import java.math.BigDecimal;
-import java.util.HashSet;
 import java.util.Objects;
-import java.util.Set;
 import java.util.UUID;
 
 public final class ProductRecord {
     private final UUID UUID_value;
     private final String UUID_name;
     private final Category categoryName;
-    private BigDecimal bigDecimal;
+    private BigDecimal price;
 
     public ProductRecord(UUID UUID_value, String UUID_name, Category categoryName, BigDecimal bigDecimal) {
         if (UUID_name == null || UUID_name.isEmpty()) {
@@ -25,7 +23,7 @@ public final class ProductRecord {
             this.UUID_value = UUID_value;
             this.UUID_name = UUID_name;
             this.categoryName = categoryName;
-            this.bigDecimal = bigDecimal;}
+            this.price = bigDecimal;}
 
     }
 
@@ -38,10 +36,10 @@ public final class ProductRecord {
 
 
     public BigDecimal price() {
-        if (bigDecimal == null) {
+        if (price == null) {
             return new BigDecimal(0);
         }
-        return bigDecimal;
+        return price;
     }
 
     public UUID UUID_value() {
@@ -57,11 +55,11 @@ public final class ProductRecord {
     }
 
     public BigDecimal bigDecimal() {
-        return bigDecimal;
+        return price;
     }
 
-    public void setBigDecimal(BigDecimal bigDecimal) {
-        this.bigDecimal = bigDecimal;
+    public void setPrice(BigDecimal price) {
+        this.price = price;
     }
 
 
@@ -73,12 +71,12 @@ public final class ProductRecord {
         return Objects.equals(this.UUID_value, that.UUID_value) &&
                 Objects.equals(this.UUID_name, that.UUID_name) &&
                 Objects.equals(this.categoryName, that.categoryName) &&
-                Objects.equals(this.bigDecimal, that.bigDecimal);
+                Objects.equals(this.price, that.price);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(UUID_value, UUID_name, categoryName, bigDecimal);
+        return Objects.hash(UUID_value, UUID_name, categoryName, price);
     }
 
     @Override
@@ -87,7 +85,7 @@ public final class ProductRecord {
                 "UUID_value=" + UUID_value + ", " +
                 "UUID_name=" + UUID_name + ", " +
                 "categoryName=" + categoryName + ", " +
-                "bigDecimal=" + bigDecimal + ']';
+                "bigDecimal=" + price + ']';
     }
 
 }

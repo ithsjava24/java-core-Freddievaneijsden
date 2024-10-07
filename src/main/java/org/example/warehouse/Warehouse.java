@@ -29,24 +29,24 @@ public class Warehouse {
     }
 
     public boolean isEmpty() {
-        return this.name == null;
+        return this.addedProducts.isEmpty();
     }
 
     public List<ProductRecord> getProducts() {
-        return addedProducts;
+        return List.copyOf(addedProducts);
     }
 
     public List<ProductRecord> getChangedProductRecords() {
         return changedProductRecords;
     }
 
-    public ProductRecord addProduct(UUID UUID_value, String name, Category categoryName, BigDecimal bigDecimal) {
+    public ProductRecord addProduct(UUID UUID_value, String name, Category categoryName, BigDecimal price) {
         for (ProductRecord productRecord : addedProducts) {
             if (productRecord.uuid().equals(UUID_value)) {
-                throw new IllegalArgumentException("Product with that id already exists, use updateProduct for updates");
+                throw new IllegalArgumentException("Product with that id already exists, use updateProduct for updates.");
             }
         }
-        var product = new ProductRecord(UUID_value, name, categoryName, bigDecimal);
+        var product = new ProductRecord(UUID_value, name, categoryName, price);
         addedProducts.add(product);
         return product;
     }
@@ -66,9 +66,15 @@ public class Warehouse {
                 changedProductRecords.add(product);
             }
         }
+
+        boolean containsUUID = addedProducts.stream().anyMatch(product -> product.UUID_value().equals(uuid));
+        if (!containsUUID) {
+            throw new IllegalArgumentException("Product with that id doesn't exist.");
+        }
+
         addedProducts.stream()
                 .filter(product -> product.UUID_value().equals(uuid))
-                .forEach(product -> product.setBigDecimal(newPrice));
+                .forEach(product -> product.setPrice(newPrice));
     }
 
     public List<ProductRecord> getChangedProducts() {
