@@ -2,12 +2,13 @@ package org.example.warehouse;
 
 import java.math.BigDecimal;
 import java.util.*;
+import java.util.stream.Collectors;
 
 public class Warehouse {
     private String name;
     private final List<ProductRecord> addedProducts = new ArrayList<>();
     private final List<ProductRecord> changedProductRecords = new ArrayList<>();
-    private static final Map <String, Warehouse> warehouses = new HashMap <>();
+    private static final Map<String, Warehouse> warehouses = new HashMap<>();
 
     private Warehouse() {
     }
@@ -41,40 +42,38 @@ public class Warehouse {
     }
 
     public ProductRecord addProduct(UUID UUID_value, String name, Category categoryName, BigDecimal price) {
-        for (ProductRecord productRecord : addedProducts) {
-            if (productRecord.uuid().equals(UUID_value)) {
-                throw new IllegalArgumentException("Product with that id already exists, use updateProduct for updates.");
-            }
-        }
-        var product = new ProductRecord(UUID_value, name, categoryName, price);
-        addedProducts.add(product);
-        return product;
+        addedProducts.stream()
+                .filter(product -> product.uuid().equals(UUID_value))
+                .findAny()
+                .ifPresent(product -> {
+                    throw new IllegalArgumentException("Product with that id already exists, use updateProduct for updates.");
+                });
+
+        ProductRecord newProduct = new ProductRecord(UUID_value, name, categoryName, price);
+        addedProducts.add(newProduct);
+        return newProduct;
     }
 
     public Optional<ProductRecord> getProductById(UUID UUID_value) {
-        for (ProductRecord product : addedProducts) {
-            if (product.uuid().equals(UUID_value)) {
-                return Optional.of(product);
-            }
-        }
-        return Optional.empty();
+        return addedProducts.stream()
+                .filter(product -> product.uuid().equals(UUID_value))
+                .findAny();
     }
 
-    public void updateProductPrice(UUID uuid, BigDecimal newPrice) {
-        for (ProductRecord product : addedProducts) {
-            if (product.UUID_value().equals(uuid)) {
-                changedProductRecords.add(product);
-            }
-        }
-
-        boolean containsUUID = addedProducts.stream().anyMatch(product -> product.UUID_value().equals(uuid));
-        if (!containsUUID) {
-            throw new IllegalArgumentException("Product with that id doesn't exist.");
-        }
-
+    public void updateProductPrice(UUID UUID_value, BigDecimal newPrice) {
         addedProducts.stream()
-                .filter(product -> product.UUID_value().equals(uuid))
-                .forEach(product -> product.setPrice(newPrice));
+                .filter(product -> product.UUID_value().equals(UUID_value))
+                .findFirst()
+                .ifPresentOrElse(
+                        product -> {
+                            changedProductRecords.add(product);
+                            product.setPrice(newPrice);
+                        },
+                        () -> {
+                            throw new IllegalArgumentException("Product with that id doesn't exist.");
+                        }
+                );
+
     }
 
     public List<ProductRecord> getChangedProducts() {
@@ -82,12 +81,8 @@ public class Warehouse {
     }
 
     public Map<Category, List<ProductRecord>> getProductsGroupedByCategories() {
-        Map<Category, List<ProductRecord>> groupedByCategories = new HashMap<>();
-        for (ProductRecord productRecord : addedProducts) {
-            groupedByCategories.computeIfAbsent(productRecord.category(), k -> new ArrayList<>());
-            groupedByCategories.get(productRecord.category()).add(productRecord);
-        }
-        return groupedByCategories;
+        return addedProducts.stream()
+                .collect(Collectors.groupingBy(ProductRecord::category));
     }
 
     public List<ProductRecord> getProductsBy(Category category) {
